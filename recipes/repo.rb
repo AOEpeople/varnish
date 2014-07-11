@@ -15,20 +15,37 @@
 # limitations under the License.
 #
 
-case node['platform_family']
-when 'debian'
-  apt_repository 'varnish-cache' do
-    uri "http://repo.varnish-cache.org/#{node['platform']}"
-    distribution node['lsb']['codename']
-    components ["varnish-#{node['varnish']['version']}"]
-    key "http://repo.varnish-cache.org/#{node['platform']}/GPG-key.txt"
+case node['platform']
+when "amazon"
+  el_version = 6
+  case node['platform_version']
+  when '2013.03', '2012.09', '2012.03', '2011.09'
+    el_version = 5
   end
-when 'rhel', 'fedora'
+
   yum_repository 'varnish' do
-    description "Varnish #{node['varnish']['version']} repo (#{node['platform_version']} - $basearch)"
-    url "http://repo.varnish-cache.org/redhat/varnish-#{node['varnish']['version']}/el#{node['platform_version'].to_i}/$basearch/"
+    description "Varnish #{node['varnish']['version']} repo (el6 - $basearch)"
+    url "http://repo.varnish-cache.org/redhat/varnish-#{node['varnish']['version']}/el#{el_version}/$basearch/"
     gpgcheck false
     gpgkey 'http://repo.varnish-cache.org/debian/GPG-key.txt'
     action 'create'
+  end
+else
+  case node['platform_family']
+  when 'debian'
+    apt_repository 'varnish-cache' do
+      uri "http://repo.varnish-cache.org/#{node['platform']}"
+      distribution node['lsb']['codename']
+      components ["varnish-#{node['varnish']['version']}"]
+      key "http://repo.varnish-cache.org/#{node['platform']}/GPG-key.txt"
+    end
+  when 'rhel', 'fedora'
+    yum_repository 'varnish' do
+      description "Varnish #{node['varnish']['version']} repo (#{node['platform_version']} - $basearch)"
+      url "http://repo.varnish-cache.org/redhat/varnish-#{node['varnish']['version']}/el#{node['platform_version'].to_i}/$basearch/"
+      gpgcheck false
+      gpgkey 'http://repo.varnish-cache.org/debian/GPG-key.txt'
+      action 'create'
+    end
   end
 end
