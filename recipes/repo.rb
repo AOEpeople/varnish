@@ -24,7 +24,7 @@ when "amazon"
   end
 
   yum_repository 'varnish' do
-    description "Varnish #{node['varnish']['version']} repo (el6 - $basearch)"
+    description "Varnish #{node['varnish']['version']} repo (el#{el_version} - $basearch)"
     url "http://repo.varnish-cache.org/redhat/varnish-#{node['varnish']['version']}/el#{el_version}/$basearch/"
     gpgcheck false
     gpgkey 'http://repo.varnish-cache.org/debian/GPG-key.txt'
